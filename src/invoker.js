@@ -17,7 +17,7 @@ function encodedMessage(messageObject) {
   return lengthStr + json;
 }
 
-function sendCommand(message, cb) {
+function sendCommand(message, callback) {
   var client = net.connect('/tmp/invoker', function() {
     console.log('client connected');
     client.write(message);
@@ -27,28 +27,25 @@ function sendCommand(message, cb) {
     console.log('client disconnected');
   });
 
-  client.on('error', function() {
-    console.log('error', arguments);
+  client.on('error', function(error) {
+    console.log(error);
+    callback(error);
   });
 
   client.on('data', function(data) {
     var data = data.toString().slice(INITIAL_PACKET_SIZE);
-    return cb(data);
+    callback(null, data);
   });
 }
 
-exports.start = function(configFile, cb) {
+exports.start = function(configFile, callback) {
   exec('invoker start ' + configFile + ' -d', function(error, stdout, stderr) {
-    if (!error) {
-      return cb();
-    } else {
-      return cb(error);
-    }
+    callback(error, stdout, stderr);
   });
 };
 
-exports.list = function(cb) {
+exports.list = function(callback) {
   var messageObject = { type: 'list' };
   var message = encodedMessage(messageObject);
-  sendCommand(message, cb);
+  sendCommand(message, callback);
 };
