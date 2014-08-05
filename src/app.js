@@ -41,6 +41,26 @@ function stop() {
   });
 }
 
+function reload(processName) {
+  invoker.reload(processName, function(error, data) {
+    if (!error) {
+      console.log(processName, 'reloaded');
+    } else {
+      console.log(error);
+    }
+  });
+}
+
+function remove(processName) {
+  invoker.remove(processName, function(error, data) {
+    if (!error) {
+      console.log(processName, 'remove');
+    } else {
+      console.log(error);
+    }
+  });
+}
+
 var currentProcesses = null;
 
 function updateTrayMenu() {
@@ -77,9 +97,16 @@ function updateTrayMenu() {
         template.push({
           label: process.process_name,
           submenu: [{
-            label: 'Reload'
+            label: 'Reload',
+            click: function() {
+              reload(process.process_name);
+            }
           }, {
-            label: 'Remove'
+            label: 'Remove',
+            click: function() {
+              remove(process.process_name);
+            },
+            enabled: !!process.pid
           }]
         });
       });

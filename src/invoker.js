@@ -18,9 +18,10 @@ function encodedMessage(messageObject) {
   return lengthStr + json;
 }
 
-function sendCommand(message, callback) {
+function sendMessage(message, callback) {
   var client = net.connect(SOCKET_PATH, function() {
     console.log('client connected');
+    console.log('sending message', message);
     client.write(message);
   });
 
@@ -54,5 +55,26 @@ exports.stop = function(callback) {
 exports.list = function(callback) {
   var messageObject = { type: 'list' };
   var message = encodedMessage(messageObject);
-  sendCommand(message, callback);
+  sendMessage(message, callback);
+};
+
+exports.reload = function(processName, callback) {
+  var messageObject = {
+    process_name: processName,
+    signal: 'INT',
+    type: 'reload'
+  };
+  var message = encodedMessage(messageObject);
+  sendMessage(message, callback);
+};
+
+
+exports.remove = function(processName, callback) {
+  var messageObject = {
+    process_name: processName,
+    signal: 'INT',
+    type: 'remove'
+  };
+  var message = encodedMessage(messageObject);
+  sendMessage(message, callback);
 };
