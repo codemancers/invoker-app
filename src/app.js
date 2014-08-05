@@ -5,9 +5,12 @@ var Menu = require('menu');
 var MenuItem = require('menu-item');
 var Tray = require('tray');
 var dialog = require('dialog');
+var _ = require('underscore');
+
 var invoker = require('./invoker');
 
 var tray;
+var TRAY_UPDATE_INTERVAL = 5000;
 
 app.dock.hide();
 
@@ -26,9 +29,13 @@ function loadProject() {
   }
 }
 
+var currentProcesses = null;
+
 function updateTrayMenu() {
+  setTimeout(updateTrayMenu, TRAY_UPDATE_INTERVAL);
+
   invoker.list(function(error, data) {
-    var processes;
+    var processes = null;
 
     if (data) {
       processes = JSON.parse(data).processes;
@@ -39,7 +46,13 @@ function updateTrayMenu() {
       click: loadProject
     }];
 
+    if (_.isEqual(currentProcesses, processes) && processes !== null) {
+      return;
+    }
+
     if (processes && processes.length > 0) {
+      currentProcesses = processes;
+
       template.push({
         type: 'separator'
       });
@@ -47,7 +60,6 @@ function updateTrayMenu() {
       processes.forEach(function(process) {
         template.push({
           label: process.process_name,
-          checked: true,
           submenu: [{
             label: 'Reload'
           }, {

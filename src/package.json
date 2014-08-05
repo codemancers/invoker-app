@@ -1,5 +1,8 @@
 {
   "name"    : "invoker-app",
   "version" : "0.0.1",
-  "main"    : "app.js"
+  "main"    : "app.js",
+  "dependencies": {
+    "underscore": "~1.6.0"
+  }
 }

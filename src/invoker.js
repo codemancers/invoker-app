@@ -4,6 +4,7 @@ var exec = require('child_process').exec;
 var net = require('net');
 
 var INITIAL_PACKET_SIZE = 9;
+var SOCKET_PATH = '/tmp/invoker';
 
 function lpad(str, length, padStr) {
   padStr = padStr || '0';
@@ -18,7 +19,7 @@ function encodedMessage(messageObject) {
 }
 
 function sendCommand(message, callback) {
-  var client = net.connect('/tmp/invoker', function() {
+  var client = net.connect(SOCKET_PATH, function() {
     console.log('client connected');
     client.write(message);
   });
