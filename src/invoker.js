@@ -45,6 +45,12 @@ exports.start = function(configFile, callback) {
   });
 };
 
+exports.stop = function(callback) {
+  exec('invoker stop', function(error, stdout, stderr) {
+    callback(error, stdout, stderr);
+  });
+};
+
 exports.list = function(callback) {
   var messageObject = { type: 'list' };
   var message = encodedMessage(messageObject);

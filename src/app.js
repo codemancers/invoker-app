@@ -22,11 +22,23 @@ function loadProject() {
 
   if (Array.isArray(files)) {
     invoker.start(files[0], function(error, stdout, stderr) {
-      if (error) {
-        console.log('Error starting invoker', error);
+      if (!error) {
+        console.log('invoker started');
+      } else {
+        console.log(error);
       }
     });
   }
+}
+
+function stop() {
+  invoker.stop(function(error) {
+    if (!error) {
+      console.log('invoker stopped');
+    } else {
+      console.log(error);
+    }
+  });
 }
 
 var currentProcesses = null;
@@ -43,7 +55,8 @@ function updateTrayMenu() {
 
     var template = [{
       label: 'Load project',
-      click: loadProject
+      click: loadProject,
+      enabled: !!error
     }];
 
     if (_.isEqual(currentProcesses, processes) && processes !== null) {
@@ -54,6 +67,9 @@ function updateTrayMenu() {
       currentProcesses = processes;
 
       template.push({
+        label: 'Stop',
+        click: stop
+      },{
         type: 'separator'
       });
 
