@@ -14,6 +14,14 @@ var TRAY_UPDATE_INTERVAL = 5000;
 
 app.dock.hide();
 
+// fix the $PATH on OS X
+// OS X doesn't read .bashrc/.zshrc for GUI apps
+// Ripped from gulp-app
+if (process.platform === 'darwin') {
+  process.env.PATH += ':/usr/local/bin';
+  process.env.PATH += ':' + process.env.HOME + '/.rbenv/shims';
+}
+
 function loadProject() {
   var files = dialog.showOpenDialog({
     properties: ['openFile'],
