@@ -77,8 +77,11 @@ function updateTrayMenu() {
   invoker.list(function(error, data) {
     var processes = null;
 
-    if (data) {
+    if (!error) {
       processes = JSON.parse(data).processes;
+      tray.setImage(__dirname + '/tray-icon.png')
+    } else {
+      tray.setImage(__dirname + '/tray-icon-inactive.png')
     }
 
     var template = [{
@@ -124,7 +127,6 @@ function updateTrayMenu() {
       type: 'separator'
     }, {
       label: 'Quit',
-      sublabel: 'skjdfkldjsf',
       click: app.quit
     });
 
