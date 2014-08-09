@@ -31,12 +31,16 @@ function sendMessage(message, callback) {
 
   client.on('error', function(error) {
     console.log(error);
-    callback(error);
+    if (callback) {
+      callback(error);
+    }
   });
 
   client.on('data', function(data) {
     var data = data.toString().slice(INITIAL_PACKET_SIZE);
-    callback(null, data);
+    if (callback) {
+      callback(null, data);
+    }
   });
 }
 
@@ -58,23 +62,32 @@ exports.list = function(callback) {
   sendMessage(message, callback);
 };
 
-exports.reload = function(processName, callback) {
+exports.reload = function(processName) {
   var messageObject = {
     process_name: processName,
     signal: 'INT',
     type: 'reload'
   };
   var message = encodedMessage(messageObject);
-  sendMessage(message, callback);
+  sendMessage(message);
 };
 
+exports.add = function(processName) {
+  var messageObject = {
+    process_name: processName,
+    signal: 'INT',
+    type: 'add'
+  };
+  var message = encodedMessage(messageObject);
+  sendMessage(message);
+};
 
-exports.remove = function(processName, callback) {
+exports.remove = function(processName) {
   var messageObject = {
     process_name: processName,
     signal: 'INT',
     type: 'remove'
   };
   var message = encodedMessage(messageObject);
-  sendMessage(message, callback);
+  sendMessage(message);
 };

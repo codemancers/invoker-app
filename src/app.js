@@ -11,6 +11,7 @@ var invoker = require('./invoker');
 
 var tray;
 var TRAY_UPDATE_INTERVAL = 5000;
+var currentProcesses = null;
 
 app.dock.hide();
 
@@ -49,28 +50,6 @@ function stop() {
   });
 }
 
-function reload(processName) {
-  invoker.reload(processName, function(error, data) {
-    if (!error) {
-      console.log(processName, 'reloaded');
-    } else {
-      console.log(error);
-    }
-  });
-}
-
-function remove(processName) {
-  invoker.remove(processName, function(error, data) {
-    if (!error) {
-      console.log(processName, 'remove');
-    } else {
-      console.log(error);
-    }
-  });
-}
-
-var currentProcesses = null;
-
 function updateTrayMenu() {
   setTimeout(updateTrayMenu, TRAY_UPDATE_INTERVAL);
 
@@ -107,18 +86,7 @@ function updateTrayMenu() {
       processes.forEach(function(process) {
         template.push({
           label: process.process_name,
-          submenu: [{
-            label: 'Reload',
-            click: function() {
-              reload(process.process_name);
-            }
-          }, {
-            label: 'Remove',
-            click: function() {
-              remove(process.process_name);
-            },
-            enabled: !!process.pid
-          }]
+          submenu: createSubmenu(process)
         });
       });
     }
@@ -135,9 +103,40 @@ function updateTrayMenu() {
   });
 }
 
+function createSubmenu(process) {
+  var submenu = [];
+
+  if (process.pid) {
+    submenu.push({
+      label: 'Reload',
+      click: function() {
+        invoker.reload(process.process_name);
+      }
+    }, {
+      label: 'Remove',
+      click: function() {
+        invoker.remove(process.process_name);
+      }
+    });
+  } else {
+    submenu.push({
+      label: 'Add',
+      click: function() {
+        invoker.add(process.process_name);
+      }
+    }, {
+      label: 'Reload',
+      enabled: false
+    });
+  }
+
+  return submenu;
+}
+
 app.on('ready', function() {
   tray = new Tray(__dirname + '/tray-icon.png');
   tray.setPressedImage(__dirname + '/tray-icon-alt.png');
+  tray.setToolTip('invoker-app');
 
   updateTrayMenu();
 });
