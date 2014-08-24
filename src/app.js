@@ -13,7 +13,9 @@ var tray;
 var TRAY_UPDATE_INTERVAL = 5000;
 var currentProcesses = null;
 
-app.dock.hide();
+if (app.dock) {
+  app.dock.hide();
+}
 
 // fix the $PATH on OS X
 // OS X doesn't read .bashrc/.zshrc for GUI apps
